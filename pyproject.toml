@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lumos-shadowdom"
+version = "0.1.0"
+description = "A robust Shadow DOM traverser for Selenium"
+readme = "README.md"
+authors = [{ name = "dhiraj", email = "dhirajda.666@gmail.com" }]
+license = { file = "LICENSE" }
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+]
+dependencies = [
+    "selenium>=3.141.0"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/godhiraj-code/lumos-shadowdom"
