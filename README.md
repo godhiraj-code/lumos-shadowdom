@@ -27,7 +27,12 @@ driver.get("https://example.com")
 # Syntax: "host-element > nested-host > target-element"
 driver.find_shadow("my-app > settings-panel > button#save").click()
 
-# 🟢 Scenario 2: You just want to find a button with specific text
+# 🟢 Scenario 2: Find ALL matching elements in shadow DOM
+buttons = driver.find_all_shadow("nav-menu > button.action")
+for btn in buttons:
+    print(btn.text)
+
+# 🟢 Scenario 3: You just want to find a button with specific text
 # This scans the ENTIRE page (including all shadow roots) for you.
 driver.find_shadow_text("Confirm Purchase").click()
 ```
@@ -112,13 +117,21 @@ document.addEventListener('click', function(e) {
 
 ## 📚 API Reference
 
-### `driver.find_shadow(path: str)`
-Finds an element inside nested shadow DOMs.
+### `driver.find_shadow(path: str, timeout: int = 10) -> WebElement`
+Finds a single element inside nested shadow DOMs.
 *   **path**: A string describing the path to the element. Use `>` to separate shadow boundaries.
     *   Example: `user-profile > #settings > input.name`
     *   Means: Find `user-profile`, enter its shadow root, find `#settings`, enter its shadow root, find `input.name`.
+*   **timeout**: Seconds to wait for element (default: 10).
+*   **Returns**: The matching WebElement.
 
-### `driver.find_shadow_text(text: str)`
+### `driver.find_all_shadow(path: str, timeout: int = 10) -> List[WebElement]`
+Finds **ALL** elements matching the path inside nested shadow DOMs.
+*   **path**: Same syntax as `find_shadow`. The last selector matches multiple elements.
+    *   Example: `app-root > nav-menu > button` returns all buttons in the nav.
+*   **Returns**: List of matching WebElements (may be empty).
+
+### `driver.find_shadow_text(text: str, timeout: int = 10) -> WebElement`
 Recursively searches **every** shadow root in the DOM for an element containing the specified text.
 *   **text**: The text to look for (case-sensitive).
 *   **Returns**: The first matching WebElement found.
