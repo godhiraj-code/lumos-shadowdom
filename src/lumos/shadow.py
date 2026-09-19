@@ -18,6 +18,31 @@ class Lumos:
         """
         self.driver = driver
 
+    @staticmethod
+    def _normalize_css_path(css_path: Union[str, List[str]]) -> List[str]:
+        """Return trimmed selectors and reject paths that cannot be traversed."""
+        if isinstance(css_path, str):
+            raw_selectors = css_path.split(">")
+        else:
+            raw_selectors = list(css_path)
+
+        if not raw_selectors:
+            raise ValueError("css_path must contain at least one selector")
+
+        selectors = []
+        for selector in raw_selectors:
+            if not isinstance(selector, str):
+                raise TypeError("css_path selectors must be strings")
+
+            selector = selector.strip()
+            if not selector:
+                raise ValueError(
+                    "css_path must not contain empty or whitespace-only selectors"
+                )
+            selectors.append(selector)
+
+        return selectors
+
     def find_element(self, css_path: Union[str, List[str]], timeout: int = 10) -> WebElement:
         """
         Finds an element inside nested shadow DOMs using a 'host > nested > target' syntax.
@@ -38,10 +63,7 @@ class Lumos:
             >>> btn = lumos.find_element("user-card > button.edit")
             >>> btn.click()
         """
-        if isinstance(css_path, str):
-            selectors = [s.strip() for s in css_path.split(">")]
-        else:
-            selectors = css_path
+        selectors = self._normalize_css_path(css_path)
 
         script = """
         const selectors = arguments[0];
@@ -89,10 +111,7 @@ class Lumos:
             >>> for btn in buttons:
             ...     print(btn.text)
         """
-        if isinstance(css_path, str):
-            selectors = [s.strip() for s in css_path.split(">")]
-        else:
-            selectors = list(css_path)
+        selectors = self._normalize_css_path(css_path)
 
         script = """
         const selectors = arguments[0];
