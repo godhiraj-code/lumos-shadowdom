@@ -52,6 +52,38 @@ class TestLumos(unittest.TestCase):
 
         self.assertEqual(elements, mock_elements)
 
+    def test_find_element_rejects_blank_string_path(self) -> None:
+        """Blank selector paths fail before JavaScript execution."""
+        with self.assertRaisesRegex(ValueError, "empty or whitespace-only"):
+            self.lumos.find_element("   ")
+
+        self.mock_driver.execute_script.assert_not_called()
+
+    def test_find_elements_rejects_empty_list_path(self) -> None:
+        """An empty selector list cannot identify a traversal target."""
+        with self.assertRaisesRegex(ValueError, "at least one selector"):
+            self.lumos.find_elements([])
+
+        self.mock_driver.execute_script.assert_not_called()
+
+    def test_find_element_rejects_empty_path_segment(self) -> None:
+        """Every shadow-boundary segment must contain a selector."""
+        with self.assertRaisesRegex(ValueError, "empty or whitespace-only"):
+            self.lumos.find_element("host >   > target")
+
+        self.mock_driver.execute_script.assert_not_called()
+
+    def test_list_path_is_trimmed_without_changing_traversal(self) -> None:
+        """Whitespace around valid list selectors remains supported."""
+        mock_element = MagicMock()
+        self.mock_driver.execute_script.return_value = mock_element
+
+        element = self.lumos.find_element([" host ", " target "])
+
+        self.assertEqual(element, mock_element)
+        selectors = self.mock_driver.execute_script.call_args.args[1]
+        self.assertEqual(selectors, ["host", "target"])
+
     def test_click_force_js(self) -> None:
         """Test that click with force_js uses JavaScript click."""
         mock_element = MagicMock()
@@ -89,4 +121,3 @@ class TestLumos(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
