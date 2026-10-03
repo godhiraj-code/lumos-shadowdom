@@ -172,8 +172,11 @@ class Lumos:
         function searchShadow(root, text) {
             let all = root.querySelectorAll('*');
             for (let el of all) {
-                if (el.innerText && el.innerText.includes(text)) {
-                     if (el.children.length === 0) return [el];
+                // Reading innerText may trigger layout; only leaf elements
+                // can match, so avoid computing it for every ancestor.
+                if (el.children.length === 0) {
+                    const visibleText = el.innerText;
+                    if (visibleText && visibleText.includes(text)) return [el];
                 }
                 
                 if (el.shadowRoot) {

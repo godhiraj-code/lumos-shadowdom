@@ -19,4 +19,7 @@ jobs:
           cache: pip
       - run: python -m pip install --upgrade pip
       - run: python -m pip install -e . pytest
-      - run: python -m pytest -q tests/test_shadow_mock.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: python -m pytest -q tests/test_shadow_mock.py tests/test_text_search_runtime.py
