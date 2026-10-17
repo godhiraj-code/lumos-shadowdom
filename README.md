@@ -1,8 +1,15 @@
 # Lumos ShadowDOM 🪄
 
+[![PyPI version](https://img.shields.io/pypi/v/lumos-shadowdom.svg)](https://pypi.org/project/lumos-shadowdom/)
+[![Python versions](https://img.shields.io/pypi/pyversions/lumos-shadowdom.svg)](https://pypi.org/project/lumos-shadowdom/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/godhiraj-code/lumos-shadowdom/blob/main/LICENSE)
+[![Tests](https://github.com/godhiraj-code/lumos-shadowdom/actions/workflows/tests.yml/badge.svg)](https://github.com/godhiraj-code/lumos-shadowdom/actions/workflows/tests.yml)
+
 **Automate Shadow DOM elements in Selenium with zero headache.**
 
-Shadow DOMs are tricky. They hide elements from standard Selenium commands. `lumos-shadowdom` solves this by letting you traverse nested shadow roots automatically using simple paths or even just text.
+**Getting `NoSuchElementException` for an element you can clearly see in DevTools?** It is probably inside a shadow root. Shadow DOMs are tricky. They hide elements from standard Selenium commands, so `driver.find_element()` raises `NoSuchElementException` for elements inside a shadow root (web components, Lit, Salesforce LWC, design systems). `lumos-shadowdom` solves this by letting you traverse nested open shadow roots automatically using one simple path or even just visible text.
+
+**Learn more:** [Conquering Shadow DOM with Lumos](https://www.dhirajdas.dev/blog/conquering-shadow-dom-lumos) · [Project page](https://www.dhirajdas.dev/project/lumos-shadowdom)
 
 ---
 
@@ -115,6 +122,31 @@ document.addEventListener('click', function(e) {
 
 ---
 
+## 🤔 Why not Selenium 4's `shadow_root`?
+
+Selenium 4 can open a shadow root natively, but you need one hop per shadow host:
+
+```python
+from selenium.webdriver.common.by import By
+
+save = (
+    driver.find_element(By.CSS_SELECTOR, "my-app").shadow_root
+    .find_element(By.CSS_SELECTOR, "settings-panel").shadow_root
+    .find_element(By.CSS_SELECTOR, "button#save")
+)
+```
+
+| | Selenium 4 `element.shadow_root` | `driver.execute_script(...)` by hand | Lumos |
+|---|---|---|---|
+| Nested roots | One `find_element` + `.shadow_root` per host | Hand-written JS per page | One path: `"my-app > settings-panel > button#save"` |
+| Waiting | None built in; wrap each hop in `WebDriverWait` yourself | None built in | Waits up to `timeout` (default 10 s) for the whole path |
+| Find by visible text | No | Write it yourself | `driver.find_shadow_text("Confirm Purchase")` searches every open shadow root |
+| Selenium 3 | Not available | Yes | Yes |
+
+What Lumos does **not** do: it can't reach closed shadow roots (`mode='closed'`), and it doesn't cross `<iframe>` boundaries, so switch with `driver.switch_to.frame(...)` first. See **Limitations & Edge Cases** below.
+
+---
+
 ## 📚 API Reference
 
 ### `driver.find_shadow(path: str, timeout: int = 10) -> WebElement`
@@ -152,6 +184,15 @@ A:
 2. If the path is very long, try using the "Short Path" provided by the tool.
 3. Check if the element is inside an `iframe`. Lumos currently supports Shadow DOM, but `iframe` support is separate (you must switch to the iframe first).
 
+**Q: Which exception do I get when nothing is found?**
+A: `find_shadow()` and `find_shadow_text()` raise `lumos.ElementNotFoundError` (a `LumosException`) after the timeout, with the path or text in the message. `find_all_shadow()` returns an empty list after the timeout instead of raising.
+
+**Q: Can I use the CSS child combinator (`>`) inside one shadow root?**
+A: In a string path, `>` always means "enter the next shadow root". Use a descendant selector (a space) inside a root, or use the `Lumos` class with a list of selectors, where each item can be any CSS selector: `Lumos(driver).find_element(["my-app", "div.panel > settings-panel", "button#save"])`.
+
+**Q: `find_shadow_text()` returns a different element than I expected.**
+A: It returns the first element with no child elements whose `innerText` contains your text (case-sensitive), walking the page in document order and descending into each open shadow root as it meets it. Use a longer, more specific text, or use a path with `find_shadow()`.
+
 ---
 
 ## ⚠️ Limitations & Edge Cases
@@ -174,6 +215,6 @@ Lumos cannot access Shadow DOMs created with `mode='closed'`. This is a browser 
 
 ---
 
-**Author**: Dhiraj
-**License**: MIT
+**Author**: [Dhiraj Das](https://www.dhirajdas.dev)
+**License**: MIT (see [LICENSE](https://github.com/godhiraj-code/lumos-shadowdom/blob/main/LICENSE))
 
