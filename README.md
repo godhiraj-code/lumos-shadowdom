@@ -215,6 +215,6 @@ Lumos cannot access Shadow DOMs created with `mode='closed'`. This is a browser 
 
 ---
 
-**Author**: [Dhiraj Das](https://www.dhirajdas.dev)
+**Author**: [Dhiraj Das](https://www.dhirajdas.dev) · [Follow @dkkkkd on X](https://x.com/dkkkkd)
 **License**: MIT (see [LICENSE](https://github.com/godhiraj-code/lumos-shadowdom/blob/main/LICENSE))
 

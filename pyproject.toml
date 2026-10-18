@@ -49,6 +49,7 @@ Documentation = "https://github.com/godhiraj-code/lumos-shadowdom#readme"
 Repository = "https://github.com/godhiraj-code/lumos-shadowdom"
 Issues = "https://github.com/godhiraj-code/lumos-shadowdom/issues"
 Blog = "https://www.dhirajdas.dev/blog/conquering-shadow-dom-lumos"
+X = "https://x.com/dkkkkd"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/lumos"]
