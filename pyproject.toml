@@ -1,21 +1,61 @@
 [build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
+# hatchling 1.27 is the last release that still runs on Python 3.8 and it
+# supports PEP 639 SPDX license expressions.
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
 
 [project]
 name = "lumos-shadowdom"
-version = "0.2.0"
-description = "A robust Shadow DOM traverser for Selenium"
+version = "0.2.1"
+description = "Find Selenium elements inside nested Shadow DOM (open shadow roots) with one CSS path or by visible text."
 readme = "README.md"
-authors = [{ name = "dhiraj", email = "dhirajdas.666@gmail.com" }]
-license = { file = "LICENSE" }
+requires-python = ">=3.8"
+authors = [{ name = "Dhiraj Das", email = "dhirajdas.666@gmail.com" }]
+license = "MIT"
+license-files = ["LICENSE"]
+keywords = [
+    "selenium",
+    "shadow-dom",
+    "shadow-root",
+    "web-components",
+    "lit",
+    "salesforce-lwc",
+    "webdriver",
+    "test-automation",
+]
 classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Testing",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Internet :: WWW/HTTP :: Browsers",
+    "Typing :: Typed",
 ]
 dependencies = [
     "selenium>=3.141.0"
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/godhiraj-code/lumos-shadowdom"
+Homepage = "https://www.dhirajdas.dev/project/lumos-shadowdom"
+Documentation = "https://github.com/godhiraj-code/lumos-shadowdom#readme"
+Repository = "https://github.com/godhiraj-code/lumos-shadowdom"
+Issues = "https://github.com/godhiraj-code/lumos-shadowdom/issues"
+Blog = "https://www.dhirajdas.dev/blog/conquering-shadow-dom-lumos"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/lumos"]
+# Core Metadata 2.4 (PEP 639 License-Expression) is accepted by every current
+# PyPI upload tool; newer hatchling releases would otherwise emit 2.5.
+core-metadata-version = "2.4"
+
+[tool.hatch.build.targets.sdist]
+include = ["src/lumos", "tests", "README.md", "LICENSE", "case_study.md"]
+core-metadata-version = "2.4"
